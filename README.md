@@ -9,6 +9,7 @@ Build a Kubernetes cluster using Ansible with k3s. The goal is easily install a 
 - [X] Debian
 - [X] Ubuntu
 - [X] CentOS
+- [X] Alma Linux https://almalinux.org/
 
 on processor architecture:
 
@@ -48,13 +49,26 @@ If needed, you can also edit `inventory/my-cluster/group_vars/all.yml` to match 
 Start provisioning of the cluster using the following command:
 
 ```bash
-ansible-playbook site.yml -i inventory/my-cluster/hosts.ini
+ansible-playbook site.yml -i inventory/g01/hosts.ini
 ```
 
+## patching
+```bash
+ansible-playbook patch.yml  -i inventory/g01/hosts.ini 
+```
 ## Kubeconfig
 
 To get access to your **Kubernetes** cluster just
 
 ```bash
-scp debian@master_ip:~/.kube/config ~/.kube/config
+scp master_ip:~/.kube/config k3s_kubeconfig
+
+export KUBECONFIG=k3s_kubeconfig
+
+oc get nodes -o wide                                                                                                                                                     master 
+NAME            STATUS   ROLES                  AGE   VERSION        INTERNAL-IP   EXTERNAL-IP   OS-IMAGE                         KERNEL-VERSION              CONTAINER-RUNTIME
+alma-master01   Ready    control-plane,master   20h   v1.25.4+k3s1   10.0.0.191    <none>        AlmaLinux 8.7 (Stone Smilodon)   4.18.0-425.3.1.el8.x86_64   containerd://1.6.8-k3s1
+alma-node01     Ready    <none>                 20h   v1.25.4+k3s1   10.0.0.190    <none>        AlmaLinux 8.7 (Stone Smilodon)   4.18.0-425.3.1.el8.x86_64   containerd://1.6.8-k3s1
+alma-node02     Ready    <none>                 20h   v1.25.4+k3s1   10.0.0.192    <none>        AlmaLinux 8.7 (Stone Smilodon)   4.18.0-425.3.1.el8.x86_64   containerd://1.6.8-k3s1
+
 ```
