@@ -1,0 +1,33 @@
+---
+- name: Update all installed packages using YUM module
+  yum:
+    name: "*"
+    state: latest
+    update_cache: yes
+    update_only: yes
+  register: yum_update_status
+
+- name: Remove packates not needed anymore
+  yum:
+    autoremove: yes
+
+- name: Reboot when packages were updated
+  reboot:
+  when: yum_update_status.changed
+  async: 1
+  poll: 0
+
+# - name: Wait for the reboot and reconnect
+#   wait_for:
+#     port: 22
+#     host: "{{ hostname }}"
+#     search_regex: OpenSSH
+#     delay: 10
+#     timeout: 60
+#   connection: local
+
+- name: Check the Uptime of the servers
+  shell: "uptime"
+  register: Uptime
+
+- debug: var=Uptime

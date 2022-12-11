@@ -45,10 +45,29 @@
 
 - name: Add /usr/local/bin to sudo secure_path
   lineinfile:
-    line: 'Defaults    secure_path = /sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin'
+    line: "Defaults    secure_path = /sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin"
     regexp: "Defaults(\\s)*secure_path(\\s)*="
     state: present
     insertafter: EOF
     path: /etc/sudoers
-    validate: 'visudo -cf %s'
+    validate: "visudo -cf %s"
   when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux']
+
+- name: "Configure hostname"
+  ansible.builtin.hostname:
+    name: "{{ hostname }}"
+  become: true
+
+- name: disable servicesservicse
+  ansible.builtin.service:
+    name: "{{ item }}"
+    enabled: false
+    state: stopped
+  with_items:
+    - firewalld
+
+- name: set prompt PS1
+  lineinfile:
+    path: /etc/bashrc
+    line: 'export PS1="\e[0;32m[\u@\h \W]\$ \e[0m"'
+    insertbefore: BOF
