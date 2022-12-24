@@ -6,16 +6,39 @@
     update_cache: yes
     update_only: yes
   register: yum_update_status
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux']
 
 - name: Remove packates not needed anymore
   yum:
     autoremove: yes
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux']
 
 - name: Reboot when packages were updated
   reboot:
   when: yum_update_status.changed
-  async: 1
-  poll: 0
+
+# ubunut patching
+- name: Perform a dist-upgrade.
+  ansible.builtin.apt:
+    upgrade: dist
+    update_cache: yes
+  when: ansible_distribution == 'Debian'
+
+- name: Check if a reboot is required.
+  ansible.builtin.stat:
+    path: /var/run/reboot-required
+    get_md5: no
+  register: reboot_required_file
+  when: ansible_distribution == 'Debian'
+
+- name: Reboot the server (if required)
+  reboot:
+  when: ansible_distribution == 'Debian' and reboot_required_file.stat.exists
+
+- name: Remove dependencies that are no longer required.
+  ansible.builtin.apt:
+    autoremove: yes
+  when: ansible_distribution == 'Debian'
 
 # - name: Wait for the reboot and reconnect
 #   wait_for:

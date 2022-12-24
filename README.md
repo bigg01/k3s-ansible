@@ -50,6 +50,7 @@ Start provisioning of the cluster using the following command:
 
 ```bash
 ansible-playbook site.yml -i inventory/g01/hosts.ini
+
 ```
 
 ## patching
@@ -71,4 +72,9 @@ alma-master01   Ready    control-plane,master   20h   v1.25.4+k3s1   10.0.0.191 
 alma-node01     Ready    <none>                 20h   v1.25.4+k3s1   10.0.0.190    <none>        AlmaLinux 8.7 (Stone Smilodon)   4.18.0-425.3.1.el8.x86_64   containerd://1.6.8-k3s1
 alma-node02     Ready    <none>                 20h   v1.25.4+k3s1   10.0.0.192    <none>        AlmaLinux 8.7 (Stone Smilodon)   4.18.0-425.3.1.el8.x86_64   containerd://1.6.8-k3s1
 
+```
+
+## misc
+```bash
+ANSIBLE_STDOUT_CALLBACK=yaml  ansible -i inventory/g01/hosts.ini all  -m shell -a "free -g"
 ```

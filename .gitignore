@@ -1,2 +1,4 @@
 venv/*
 k3s_kubeconfig
+awx/
+completion.bash.inc
